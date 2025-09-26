@@ -12,14 +12,14 @@ h2,h3,h4{margin:8px 0}
 .category-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .category-btn{padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px}
 .category-btn.active{background:#2b6ef6;color:#fff;border-color:#2b6ef6}
-.menu-list{
+#menu-list{
   display:flex;
   flex-direction:column;
   gap:4px;
   margin-top:8px;
 
-  /* ✅ thêm cuộn cho danh sách món */
-  max-height:60vh;    /* hoặc đổi thành 300px nếu muốn cố định */
+  /* ✅ thêm cuộn khi danh sách món quá dài */
+  max-height:60vh;   /* hoặc đổi thành 300px nếu muốn cố định */
   overflow-y:auto;
 }
 .menu-row{background:#fff;border:1px solid #e6e9ef;padding:6px 8px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
