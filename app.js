@@ -13,8 +13,8 @@ let menuItems = JSON.parse(localStorage.getItem("menuItems")) || [];
 let tables = JSON.parse(localStorage.getItem("tables")) || [];
 let history = JSON.parse(localStorage.getItem("history")) || [];
 
+// Nếu chưa có dữ liệu -> tạo menu mặc định mới
 if (categories.length === 0 || menuItems.length === 0) {
-  // ✅ Menu mặc định
   categories = ["Cà phê", "Trà sữa", "Sinh tố", "Sữa chua", "Giải khát", "Topping"];
 
   menuItems = [
@@ -86,14 +86,28 @@ if (categories.length === 0 || menuItems.length === 0) {
 }
 
 // =======================
-// Phần code hiển thị menu, thêm bàn, giỏ hàng...
+// Render categories & menu
 // =======================
-// (Do file app.js của bạn rất dài, mình giữ nguyên toàn bộ logic cũ,
-// chỉ thay đổi phần menu mặc định + format giá)
+function renderCategories() {
+  const bar = document.getElementById("category-bar");
+  bar.innerHTML = "";
+  categories.forEach((cat, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "category-btn" + (idx === 0 ? " active" : "");
+    btn.textContent = cat;
+    btn.onclick = () => {
+      document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderMenu(cat);
+    };
+    bar.appendChild(btn);
+  });
+  if (categories.length > 0) renderMenu(categories[0]);
+}
 
-// Ví dụ hiển thị giá trong render:
 function renderMenu(cat) {
   const list = document.getElementById("menu-list");
+  list.style.display = "flex";
   list.innerHTML = "";
   menuItems.filter(i => i.cat === cat).forEach(item => {
     const row = document.createElement("div");
@@ -111,4 +125,62 @@ function renderMenu(cat) {
   });
 }
 
-// (các hàm khác: addToCart, renderCart, saveTable, openSettings... giữ nguyên)
+// =======================
+// Cart & Order
+// =======================
+let currentTable = null;
+
+function addToCart(itemName) {
+  const table = tables.find(t => t.name === currentTable);
+  if (!table) return;
+  const menuItem = menuItems.find(m => m.name === itemName);
+  if (!menuItem) return;
+  const found = table.cart.find(c => c.name === itemName);
+  if (found) {
+    found.qty++;
+  } else {
+    table.cart.push({ name: itemName, price: menuItem.price, qty: 1 });
+  }
+  saveTables();
+  renderCart();
+}
+
+function renderCart() {
+  const table = tables.find(t => t.name === currentTable);
+  if (!table) return;
+  const list = document.getElementById("cart-list");
+  list.innerHTML = "";
+  let total = 0;
+  table.cart.forEach(item => {
+    total += item.price * item.qty;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${item.name} x${item.qty}</span>
+      <span>${formatPrice(item.price * item.qty)}</span>
+    `;
+    list.appendChild(li);
+  });
+  document.getElementById("total").textContent = formatPrice(total);
+  document.getElementById("primary-actions").style.display = table.cart.length > 0 ? "flex" : "none";
+}
+
+// =======================
+// Save & LocalStorage
+// =======================
+function saveTables() {
+  localStorage.setItem("tables", JSON.stringify(tables));
+}
+
+// =======================
+// Navigation
+// =======================
+function backToTables() {
+  document.querySelectorAll("main").forEach(m => m.style.display = "none");
+  document.getElementById("table-screen").style.display = "block";
+}
+
+// Khi load
+document.addEventListener("DOMContentLoaded", () => {
+  renderCategories();
+  backToTables();
+});
