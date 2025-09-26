@@ -13,14 +13,14 @@ h2,h3,h4{margin:8px 0}
 .category-btn{padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px}
 .category-btn.active{background:#2b6ef6;color:#fff;border-color:#2b6ef6}
 
-/* ✅ Danh sách menu món (phần trên) có cuộn */
+/* ✅ Menu món ở trên sẽ cuộn khi dài */
 #menu-list{
   display:flex;
   flex-direction:column;
   gap:4px;
   margin-top:8px;
 
-  max-height:60vh;   /* hoặc đổi thành 300px nếu muốn cố định */
+  max-height:60vh;   /* bạn có thể đổi thành 300px nếu muốn cố định */
   overflow-y:auto;
 }
 
