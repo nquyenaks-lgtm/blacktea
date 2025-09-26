@@ -13,19 +13,16 @@ h2,h3,h4{margin:8px 0}
 .category-btn{padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px}
 .category-btn.active{background:#2b6ef6;color:#fff;border-color:#2b6ef6}
 
-/* Danh sách món */
+/* Danh sách món: giới hạn khoảng 6 dòng, cuộn khi dài */
 .menu-list{
   display:flex;
   flex-direction:column;
   gap:4px;
   margin-top:8px;
-
-  /* Thêm cuộn cho danh sách món */
-  max-height:50vh;      /* tối đa nửa màn hình */
+  max-height:280px;   /* ~ 6 món */
   overflow-y:auto;
   padding-right:4px;
 }
-
 .menu-row{background:#fff;border:1px solid #e6e9ef;padding:6px 8px;border-radius:6px;display:flex;justify-content:space-between;align-items:center}
 .menu-left{display:flex;flex-direction:column}
 .menu-name{font-weight:700;font-size:15px}
@@ -33,12 +30,26 @@ h2,h3,h4{margin:8px 0}
 .qty-controls{display:flex;align-items:center;gap:8px}
 .qty-controls button{padding:6px 8px;border-radius:6px;border:0;cursor:pointer}
 
-/* Giỏ hàng */
+/* Hóa đơn */
 .cart-list{list-style:none;max-height:260px;overflow:auto;margin-top:8px;padding-left:0}
 .cart-list li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eee;font-size:14px}
-.cart-summary{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.cart-actions{display:flex;gap:8px;margin-top:8px}
+.cart-summary{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding-bottom:70px} /* chừa chỗ cho nút cố định */
 
+/* Nút Hủy đơn / Lưu đơn cố định */
+.cart-actions{
+  display:flex;
+  gap:8px;
+  position:fixed;
+  bottom:12px;
+  left:12px;
+  right:12px;
+  background:#f6f7fb;
+  padding:8px 0;
+  z-index:100;
+  justify-content:center;
+}
+
+/* Nút & chung */
 .settings-line{width:100%;text-align:left;padding:12px;border-radius:8px}
 .btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
 .btn-primary{background:#2b6ef6;color:#fff}
