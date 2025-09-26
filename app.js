@@ -65,7 +65,7 @@ function addGuest(){
 // add named table
 function addNamed(){
   const name = $('new-table-name').value.trim();
-  if(!name){ alert('Nhập tên bàn'); return; }
+  if(!name){ return; }
   const id = Date.now();
   TABLES.push({ id, name, cart: [] });
   $('new-table-name').value = '';
@@ -153,14 +153,14 @@ function changeQty(id,delta){ if(!currentTable) return; const item = MENU.find(m
 function renderCart(){ const ul = $('cart-list'); ul.innerHTML = ''; if(!currentTable || !currentTable.cart.length){ ul.innerHTML = '<div class="small">Chưa có món</div>'; $('total').innerText='0'; return; } let total=0; currentTable.cart.forEach(it=>{ total += it.price*it.qty; const li=document.createElement('li'); li.innerHTML = '<div><div style="font-weight:700">'+it.name+'</div><div class="small">'+fmtV(it.price)+' x '+it.qty+'</div></div><div style="font-weight:700">'+fmtV(it.price*it.qty)+'</div>'; ul.appendChild(li); }); $('total').innerText = fmtV(total); }
 
 // primary actions (new table)
-function cancelOrder(){ if(!currentTable) return; if(confirm('Hủy đơn?')){ currentTable.cart=[]; renderMenuList(); renderCart(); } }
+function cancelOrder(){ if(!currentTable) return; currentTable.cart=[]; renderMenuList(); renderCart(); }
 
-function saveOrder(){ if(!currentTable) return; if(!currentTable.cart.length){ alert('Giỏ hàng trống!'); return; } TABLES = TABLES.map(t=> t.id===currentTable.id ? currentTable : t); saveAll(); alert('Đã lưu đơn'); backToTables(); }
+function saveOrder(){ if(!currentTable) return; if(!currentTable.cart.length){ return; } TABLES = TABLES.map(t=> t.id===currentTable.id ? currentTable : t); saveAll(); backToTables(); }
 
 // table actions
 function addMore(){ if(!currentTable) return; $('menu-list').style.display='block'; createdFromMain = true; $('primary-actions').style.display='flex'; $('table-actions').style.display='none'; renderMenuList(); }
 
-function payTable(){ if(!currentTable) return; if(!currentTable.cart.length){ alert('Chưa có món!'); return; } // open payment screen with bill preview
+function payTable(){ if(!currentTable) return; if(!currentTable.cart.length){ return; } // open payment screen with bill preview
   $('menu-screen').style.display='none'; $('payment-screen').style.display='block';
   $('pay-table-name').innerText = currentTable.name;
   renderPaymentPreview();
@@ -213,12 +213,9 @@ function confirmPayment(){
   const rec = { table: currentTable.name, time: nowStr(), iso: isoDateKey(nowStr()), items: currentTable.cart.slice(), subtotal, discount, total: final };
   HISTORY.push(rec);
   saveAll();
-  // print using same layout but include discount and final
   printFinalBill(rec);
-  // remove table
   TABLES = TABLES.filter(t=> t.id !== currentTable.id);
   saveAll();
-  // go back home
   $('payment-screen').style.display='none';
   backToTables();
 }
@@ -256,12 +253,12 @@ function openPrinterSettings(){ $('settings-screen').style.display='none'; $('pr
 
 // menu settings
 function renderCategoriesList(){ const ul=$('categories-list'); ul.innerHTML=''; CATEGORIES.forEach((c,i)=>{ const li=document.createElement('li'); li.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div>'+c+'</div>' + (i>0? '<div><button class="btn btn-secondary" onclick="deleteCategory('+i+')">Xóa</button></div>':'') + '</div>'; ul.appendChild(li); }); }
-function addCategory(){ const name = $('new-cat-name').value.trim(); if(!name) return; if(CATEGORIES.includes(name)){ alert('Đã tồn tại'); return; } CATEGORIES.push(name); $('new-cat-name').value=''; saveAll(); renderCategoriesList(); renderCategories(); populateCatSelect(); }
-function deleteCategory(i){ if(confirm('Xóa danh mục? Món thuộc danh mục đó sẽ chuyển về Tất cả')){ const cat=CATEGORIES[i]; MENU = MENU.map(m=> m.cat===cat? {...m,cat:'Tất cả'}:m); CATEGORIES.splice(i,1); saveAll(); renderCategoriesList(); renderMenuSettings(); renderMenuList(); renderCategories(); populateCatSelect(); } }
+function addCategory(){ const name = $('new-cat-name').value.trim(); if(!name) return; if(CATEGORIES.includes(name)){ return; } CATEGORIES.push(name); $('new-cat-name').value=''; saveAll(); renderCategoriesList(); renderCategories(); populateCatSelect(); }
+function deleteCategory(i){ const cat=CATEGORIES[i]; MENU = MENU.map(m=> m.cat===cat? {...m,cat:'Tất cả'}:m); CATEGORIES.splice(i,1); saveAll(); renderCategoriesList(); renderMenuSettings(); renderMenuList(); renderCategories(); populateCatSelect(); }
 function populateCatSelect(){ const sel=$('cat-select'); sel.innerHTML=''; CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.innerText=c; sel.appendChild(o); }); if(!CATEGORIES.includes(activeCategory)) activeCategory='Tất cả'; }
 function renderMenuSettings(){ const ul=$('menu-settings-list'); ul.innerHTML=''; MENU.forEach((m,i)=>{ const li=document.createElement('li'); li.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><b>'+m.name+'</b><div class="small">'+m.cat+' • '+fmtV(m.price)+'</div></div><div><button class="btn btn-secondary" onclick="deleteMenu('+i+')">Xóa</button></div></div>'; ul.appendChild(li); }); }
-function addMenuItem(){ const name=$('new-item-name').value.trim(); const price=parseInt($('new-item-price').value); const cat=$('cat-select').value||'Tất cả'; if(!name||!price){ alert('Nhập tên và giá'); return; } MENU.push({ id: Date.now(), name, price, cat }); $('new-item-name').value=''; $('new-item-price').value=''; saveAll(); renderMenuSettings(); renderMenuList(); }
-function deleteMenu(i){ if(confirm('Xóa món?')){ MENU.splice(i,1); saveAll(); renderMenuSettings(); renderMenuList(); } }
+function addMenuItem(){ const name=$('new-item-name').value.trim(); const price=parseInt($('new-item-price').value); const cat=$('cat-select').value||'Tất cả'; if(!name||!price){ return; } MENU.push({ id: Date.now(), name, price, cat }); $('new-item-name').value=''; $('new-item-price').value=''; saveAll(); renderMenuSettings(); renderMenuList(); }
+function deleteMenu(i){ MENU.splice(i,1); saveAll(); renderMenuSettings(); renderMenuList(); }
 function populatePrinterSettings(){ if($('paper-size')) $('paper-size').value = localStorage.getItem('BT8_PAPER') || '58'; if($('print-name')) $('print-name').checked = (localStorage.getItem('BT8_PRINTNAME')||'true')==='true'; }
 
 // history with filter and expandable items
@@ -271,10 +268,9 @@ function clearDateFilter(){ if($('history-date')){ $('history-date').value=''; r
 function renderHistory(){
   const container = $('history-container'); container.innerHTML = '';
   if(!HISTORY.length){ container.innerHTML = '<div class="small">Chưa có lịch sử</div>'; return; }
-  // group by iso date
   const grouped = {};
   HISTORY.forEach(h=>{
-    const key = isoDateKey(h.time || h.iso || h.time); // ensure compatibility
+    const key = isoDateKey(h.time || h.iso || h.time);
     if(!grouped[key]) grouped[key]=[];
     grouped[key].push(h);
   });
@@ -289,17 +285,13 @@ function renderHistory(){
     let dailyTotal = 0;
     grouped[k].forEach(rec=>{
       const it = document.createElement('div'); it.className='history-item';
-      // collapsed view with ability to expand
       const left = document.createElement('div');
       left.innerHTML = '<b>'+rec.table+'</b><div class="small">'+rec.time+'</div>';
       const right = document.createElement('div'); right.className='small'; right.innerText = rec.items.length + ' món • ' + fmtV(rec.total) + ' VND';
       it.appendChild(left); it.appendChild(right);
-      // make expandable
       it.style.cursor = 'pointer';
       it.addEventListener('click', ()=>{
-        // toggle detail
         if(it._expanded){
-          // collapse
           if(it._details) it.removeChild(it._details);
           it._expanded = false;
         } else {
@@ -331,7 +323,6 @@ window.addEventListener('load', ()=>{
   if($('addmore-btn')) $('addmore-btn').addEventListener('click', addMore);
   if($('pay-btn')) $('pay-btn').addEventListener('click', payTable);
   if($('history-date')) $('history-date').addEventListener('change', ()=> renderHistory());
-  // brand clickable
   const brand = document.getElementById('brand'); if(brand) brand.addEventListener('click', ()=> backToTables());
   renderTables(); renderCategories(); populateCatSelect(); renderMenuSettings(); saveAll();
 });
